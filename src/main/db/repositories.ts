@@ -1,0 +1,93 @@
+// ═══════════════════════════════════════════════
+// Aperture — Repositories (sql.js)
+// ═══════════════════════════════════════════════
+
+import { randomUUID } from 'crypto'
+import type { SqlJsStatic, Database as SqlJsDb, BindParams } from 'sql.js'
+import { getDb, saveDb } from './connection'
+import type { Session, Message } from '../../shared/types'
+
+type Row = Record<string, unknown>
+
+function rowToObj(columns: string[], values: unknown[]): Row {
+  const obj: Row = {}
+  columns.forEach((col, i) => { obj[col] = values[i] })
+  return obj
+}
+
+function queryAll(db: SqlJsDb, sql: string, params?: BindParams): Row[] {
+  const stmt = db.prepare(sql)
+  if (params) (stmt as { bind: (p: unknown[]) => void }).bind(params as unknown[])
+  const rows: Row[] = []
+  while (stmt.step()) rows.push(rowToObj(stmt.getColumnNames(), stmt.get()))
+  stmt.free()
+  return rows
+}
+
+function queryOne(db: SqlJsDb, sql: string, params?: BindParams): Row | undefined {
+  return queryAll(db, sql, params)[0]
+}
+
+function castRows<T>(rows: Row[]): T[] { return rows as unknown as T[] }
+function castRow<T>(row?: Row): T | undefined { return row as unknown as T | undefined }
+
+async function dbRun(sql: string, params?: BindParams): Promise<void> {
+  const db = await getDb()
+  db.run(sql, params)
+  saveDb()
+}
+
+// ─── Sessions ───────────────────────────────────
+
+export async function listSessions(): Promise<Session[]> {
+  const db = await getDb()
+  return castRows<Session>(queryAll(db, 'SELECT * FROM sessions WHERE status != ? ORDER BY pinned DESC, updated_at DESC', ['archived']))
+    .map(s => ({ ...s, title: s.title || '新对话' }))
+}
+
+export async function getSession(id: string): Promise<Session | undefined> {
+  const db = await getDb()
+  const row = queryOne(db, 'SELECT * FROM sessions WHERE id = ?', [id])
+  if (!row) return undefined
+  return castRow<Session>(row)!
+}
+
+export async function createSession(backendId: string, cwd: string, model?: string): Promise<Session> {
+  const id = randomUUID()
+  const now = new Date().toISOString()
+  await dbRun('INSERT INTO sessions (id, backend_id, cwd, model, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', [id, backendId, cwd, model ?? null, now, now])
+  return (await getSession(id))!
+}
+
+export async function deleteSession(id: string): Promise<void> {
+  await dbRun('DELETE FROM sessions WHERE id = ?', [id])
+}
+
+export async function renameSession(id: string, title: string): Promise<void> {
+  await dbRun("UPDATE sessions SET title = ?, updated_at = datetime('now') WHERE id = ?", [title, id])
+}
+
+export async function pinSession(id: string, pinned: boolean): Promise<void> {
+  await dbRun("UPDATE sessions SET pinned = ?, updated_at = datetime('now') WHERE id = ?", [pinned ? 1 : 0, id])
+}
+
+export async function archiveSession(id: string): Promise<void> {
+  await dbRun("UPDATE sessions SET status = 'archived', updated_at = datetime('now') WHERE id = ?", [id])
+}
+
+// ─── Messages ───────────────────────────────────
+
+export async function addMessage(
+  sessionId: string, role: string, content?: string,
+  thinking?: string, toolCalls?: string, toolResults?: string
+): Promise<Message> {
+  const db = await getDb()
+  db.run('INSERT INTO messages (session_id, role, content, thinking, tool_calls, tool_results) VALUES (?, ?, ?, ?, ?, ?)', [sessionId, role, content ?? null, thinking ?? null, toolCalls ?? null, toolResults ?? null])
+  await dbRun("UPDATE sessions SET message_count = (SELECT COUNT(*) FROM messages WHERE session_id = ?), updated_at = datetime('now') WHERE id = ?", [sessionId, sessionId])
+  return castRow<Message>(queryOne(db, 'SELECT * FROM messages WHERE id = last_insert_rowid()'))!
+}
+
+export async function getMessages(sessionId: string): Promise<Message[]> {
+  const db = await getDb()
+  return castRows<Message>(queryAll(db, 'SELECT * FROM messages WHERE session_id = ? ORDER BY id ASC', [sessionId]))
+}

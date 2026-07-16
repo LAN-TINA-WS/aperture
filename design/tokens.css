@@ -1,0 +1,195 @@
+/* ═══════════════════════════════════════════════════
+   Aperture Design Tokens
+   配色来源: Hermes Desktop Nous 主题 (完全一致)
+   前缀: --ap-  |  语义: shadcn/ui 兼容
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Nous 亮色主题 ─── */
+:root,
+.theme-aperture-light,
+.light {
+  /* 基础面 */
+  --ap-background:              #F8FAFF;
+  --ap-foreground:              #17171A;
+  --ap-card:                    #FFFFFF;
+  --ap-card-foreground:         #17171A;
+  --ap-popover:                 #FFFFFF;
+  --ap-popover-foreground:      #17171A;
+
+  /* 次级面 */
+  --ap-muted:                   #F2F6FF;    /* nousTint(5)  */
+  --ap-muted-foreground:        #666678;
+  --ap-secondary:               #F0F4FF;    /* nousTint(7)  */
+  --ap-secondary-foreground:    #242432;
+  --ap-accent:                  #ECF1FF;    /* nousTint(10) */
+  --ap-accent-foreground:       #202030;
+
+  /* 强调 */
+  --ap-primary:                 #0053FD;    /* Nous Blue    */
+  --ap-primary-foreground:      #FCFCFC;
+  --ap-ring:                    #0053FD;
+  --ap-midground:               #0053FD;
+  --ap-composer-ring:           #0053FD;
+  --ap-destructive:             #C72E4D;
+  --ap-destructive-foreground:  #FFFFFF;
+
+  /* 边框 / 输入 — 带透明度的 Nous Blue */
+  --ap-border:                  rgba(0, 83, 253, 0.22);  /* nousTintTransparent(22) */
+  --ap-input:                   rgba(0, 83, 253, 0.30);  /* nousTintTransparent(30) */
+
+  /* 侧边栏 */
+  --ap-sidebar-background:      #F3F7FF;
+  --ap-sidebar-foreground:      #17171A;
+  --ap-sidebar-border:          rgba(0, 83, 253, 0.18);  /* nousTintTransparent(18) */
+  --ap-sidebar-accent:          #ECF1FF;
+  --ap-sidebar-accent-foreground: #202030;
+  --ap-sidebar-primary:         #0053FD;
+  --ap-sidebar-primary-foreground: #FCFCFC;
+
+  /* 用户气泡 */
+  --ap-user-bubble:             #F1F5FF;    /* nousTint(6)  */
+  --ap-user-bubble-border:      rgba(0, 83, 253, 0.24);  /* nousTintTransparent(24) */
+
+  /* Agent 阶段色 */
+  --ap-agent-thinking:          #8B5CF6;
+  --ap-agent-writing:           #3B82F6;
+  --ap-agent-tool:              #F59E0B;
+  --ap-agent-done:              #10B981;
+  --ap-agent-error:             #EF4444;
+
+  /* Diff 色 */
+  --ap-diff-added-bg:           #DCFCE7;
+  --ap-diff-added-border:       #86EFAC;
+  --ap-diff-added-text:         #166534;
+  --ap-diff-removed-bg:         #FEE2E2;
+  --ap-diff-removed-border:     #FCA5A5;
+  --ap-diff-removed-text:       #991B1B;
+
+  /* 排版 */
+  --ap-font-sans:  "Segoe WPC", "Segoe UI", -apple-system, BlinkMacSystemFont,
+                   "SF Pro Text", "SF Pro Display", system-ui, sans-serif,
+                   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+                   "Noto Color Emoji", emoji;
+  --ap-font-mono:  "Courier Prime", "Cascadia Code", "JetBrains Mono",
+                   "SF Mono", ui-monospace, Menlo, Monaco, Consolas, monospace,
+                   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+                   "Noto Color Emoji", emoji;
+
+  --ap-radius:     0.625rem;
+  --ap-shadow:     0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* ─── Nous 暗色主题 ─── */
+.dark,
+.theme-aperture-dark {
+  /* 基础面 */
+  --ap-background:              #0D2F86;
+  --ap-foreground:              #FFE6CB;
+  --ap-card:                    #12378F;
+  --ap-card-foreground:         #FFE6CB;
+  --ap-popover:                 #123A96;
+  --ap-popover-foreground:      #FFE6CB;
+
+  /* 次级面 */
+  --ap-muted:                   #183F9A;
+  --ap-muted-foreground:        #B5C7F3;
+  --ap-secondary:               #1B45A4;
+  --ap-secondary-foreground:    #E0E8FF;
+  --ap-accent:                  #1540B1;
+  --ap-accent-foreground:       #F0F4FF;
+
+  /* 强调 */
+  --ap-primary:                 #FFE6CB;
+  --ap-primary-foreground:      #0D2F86;
+  --ap-ring:                    #FFE6CB;
+  --ap-midground:               #0053FD;
+  --ap-composer-ring:           #FFE6CB;
+  --ap-destructive:             #C0473A;
+  --ap-destructive-foreground:  #FEF2F2;
+
+  /* 边框 / 输入 */
+  --ap-border:                  #3158AD;
+  --ap-input:                   #0B2566;
+
+  /* 侧边栏 */
+  --ap-sidebar-background:      #09286F;
+  --ap-sidebar-foreground:      #C8C0B8;
+  --ap-sidebar-border:          #234A9C;
+  --ap-sidebar-accent:          #12378F;
+  --ap-sidebar-accent-foreground: #E0D8C8;
+  --ap-sidebar-primary:         #FFE6CB;
+  --ap-sidebar-primary-foreground: #09286F;
+
+  /* 用户气泡 */
+  --ap-user-bubble:             #143B91;
+  --ap-user-bubble-border:      #3A63BD;
+
+  /* Agent 阶段色 */
+  --ap-agent-thinking:          #A78BFA;
+  --ap-agent-writing:           #60A5FA;
+  --ap-agent-tool:              #FBBF24;
+  --ap-agent-done:              #34D399;
+  --ap-agent-error:             #F87171;
+
+  /* Diff 色 */
+  --ap-diff-added-bg:           #064E3B;
+  --ap-diff-added-border:       #059669;
+  --ap-diff-added-text:         #6EE7B7;
+  --ap-diff-removed-bg:         #7F1D1D;
+  --ap-diff-removed-border:     #DC2626;
+  --ap-diff-removed-text:       #FCA5A5;
+
+  /* 排版 — 暗色模式可覆盖字体，此处继承亮色 */
+  --ap-radius:     0.625rem;
+  --ap-shadow:     0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ════════════════════════════════════════════════════
+   Tailwind CSS 4 主题对接
+   将 --ap-* 注入为 Tailwind 的 color/radius 变量
+   ════════════════════════════════════════════════════ */
+
+@theme inline {
+  /* 基础面 */
+  --color-background:              var(--ap-background);
+  --color-foreground:              var(--ap-foreground);
+  --color-card:                    var(--ap-card);
+  --color-card-foreground:         var(--ap-card-foreground);
+  --color-popover:                 var(--ap-popover);
+  --color-popover-foreground:      var(--ap-popover-foreground);
+
+  /* 次级面 */
+  --color-muted:                   var(--ap-muted);
+  --color-muted-foreground:        var(--ap-muted-foreground);
+  --color-secondary:               var(--ap-secondary);
+  --color-secondary-foreground:    var(--ap-secondary-foreground);
+  --color-accent:                  var(--ap-accent);
+  --color-accent-foreground:       var(--ap-accent-foreground);
+
+  /* 强调 */
+  --color-primary:                 var(--ap-primary);
+  --color-primary-foreground:      var(--ap-primary-foreground);
+  --color-ring:                    var(--ap-ring);
+  --color-destructive:             var(--ap-destructive);
+  --color-destructive-foreground:  var(--ap-destructive-foreground);
+
+  /* 边框 */
+  --color-border:                  var(--ap-border);
+  --color-input:                   var(--ap-input);
+
+  /* 侧边栏 */
+  --color-sidebar-background:      var(--ap-sidebar-background);
+  --color-sidebar-foreground:      var(--ap-sidebar-foreground);
+  --color-sidebar-border:          var(--ap-sidebar-border);
+  --color-sidebar-accent:          var(--ap-sidebar-accent);
+  --color-sidebar-accent-foreground: var(--ap-sidebar-accent-foreground);
+  --color-sidebar-primary:         var(--ap-sidebar-primary);
+  --color-sidebar-primary-foreground: var(--ap-sidebar-primary-foreground);
+
+  /* 圆角 & 阴影 */
+  --radius-default:                var(--ap-radius);
+
+  /* 字体 */
+  --font-sans:                     var(--ap-font-sans);
+  --font-mono:                     var(--ap-font-mono);
+}
