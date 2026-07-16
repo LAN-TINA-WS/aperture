@@ -30,6 +30,32 @@
 
 ---
 
+## 路线图 (Roadmap)
+
+### CLI 后端接入
+
+| 后端 | 状态 | 计划 |
+|------|:---:|------|
+| **Claude Code** | ✅ 已接入 | 命令行直接对接,项目持久化,数据透明 |
+| **OpenAI Codex** | 🔧 规划中 | spawn stdin/stdout 协议, provider 切换 |
+| **Gemini CLI** | 🔧 规划中 | 复用通用 Gemini backend |
+| **Hermes Agent** | 📋 远期 | 与 Hermes Desktop 深度联动 |
+| **OpenCode** | 📋 远期 | 通用 CLI backend |
+| **OpenClaw** | 📋 远期 | 通用 CLI backend |
+
+### 核心能力
+
+| 功能 | 计划 |
+|------|------|
+| **MCP 全协议支持** | 管理本地/远程 MCP 服务器, 热加载工具 |
+| **权限审批 UI** | 接管 `Ask`/`Code`/`Plan`/`Bypass` 四种模式的可视化审批 |
+| **文件浏览器** | 右侧详情面板显示项目文件树 |
+| **内嵌终端** | xterm.js + node-pty, 一键打开 Agent 所在目录终端 |
+| **应用打包发布** | electron-builder → Windows/macOS/Linux 安装包 |
+| **自动更新** | electron-updater, GitHub Releases 分发 |
+
+---
+
 ## 1. 技术选型
 
 | 层 | 选型 | 理由 |
