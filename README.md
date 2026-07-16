@@ -26,7 +26,7 @@
 | **session-scanner** | ✅ | 直接读取 `~/.claude/projects/` 扫描 Claude Code 历史会话 |
 | **CC Switch 导入** | ✅ | 读取 CC Switch SQLite 数据库迁移 Provider/设置 |
 
-> 参考项目: [CC Switch](https://github.com/farion1231/cc-switch) (MIT) · 设计灵感: [Hermes Desktop](https://nousresearch.com)
+> 参考项目: [CC Switch](https://github.com/farion1231/cc-switch) (MIT) · 设计灵感: [Hermes Desktop](https://github.com/NousResearch/hermes-agent)
 
 ---
 
