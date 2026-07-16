@@ -30,7 +30,7 @@ const api = {
   // Session scanner
   scanner: {
     scan: () => ipcRenderer.invoke('session:scan'),
-    messages: (providerId: string, sessionId: string) => ipcRenderer.invoke('session:messages', providerId, sessionId)
+    messages: (providerId: string, sessionId: string, sourcePath?: string) => ipcRenderer.invoke('session:messages', providerId, sessionId, sourcePath)
   },
 
   // Provider

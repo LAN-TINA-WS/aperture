@@ -3,7 +3,7 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { homedir } from 'os'
 import { startAgent, killAgent, sendUserMessage, listActiveAgents } from './agent/manager'
-import { loadMessages, findClaudeSessionPath, scanAll } from './agent/session-scanner'
+import { loadMessages, findSessionPath, scanAll } from './agent/session-scanner'
 import type { StartParams } from '../shared/types'
 import { runMigrations } from './db/migrate'
 import {
@@ -139,10 +139,11 @@ ipcMain.handle('session:scan', async () => {
   }))
 })
 
-ipcMain.handle('session:messages', async (_e, _providerId: string, sessionId: string) => {
-  const path = findClaudeSessionPath(sessionId)
+ipcMain.handle('session:messages', async (_e, providerId: string, sessionId: string, sourcePath?: string) => {
+  // Use sourcePath if provided (avoids re-scanning filesystem)
+  const path = sourcePath || findSessionPath(providerId, sessionId)
   if (!path) return []
-  return loadMessages('claude', path)
+  return loadMessages(providerId, path)
 })
 
 // ─── Agent Config Reader ────────────────────────

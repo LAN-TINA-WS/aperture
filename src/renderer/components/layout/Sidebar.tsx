@@ -57,7 +57,9 @@ export default function Sidebar({ onClose }: Props) {
   const contextMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    window.api.scanner?.scan?.().then((list: unknown) => setScanned(list as ScannedSession[]))
+    window.api.scanner?.scan?.()
+      .then((list: unknown) => setScanned(list as ScannedSession[]))
+      .catch((err) => console.error('[Sidebar] scanner.scan() failed:', err))
   }, [])
 
   // Auto-focus rename input when editing starts
@@ -98,7 +100,9 @@ export default function Sidebar({ onClose }: Props) {
         title: '新对话',
       })
       // Refresh scanned list
-      window.api.scanner?.scan?.().then((list: unknown) => setScanned(list as ScannedSession[]))
+      window.api.scanner?.scan?.()
+        .then((list: unknown) => setScanned(list as ScannedSession[]))
+        .catch((err) => console.error('[Sidebar] scanner.scan() refresh failed:', err))
     },
     [clearMessages],
   )
@@ -115,7 +119,7 @@ export default function Sidebar({ onClose }: Props) {
         title: s.title || undefined,
       })
       try {
-        const msgs = await window.api.scanner.messages(s.providerId, s.sessionId)
+        const msgs = await window.api.scanner.messages(s.providerId, s.sessionId, s.sourcePath)
         const { addUserMessage, addAssistantMessage, appendContent, appendThinking, setMessageDone } =
           useChatStore.getState()
         for (const m of msgs as Array<{ role: string; content: string; thinking?: string }>) {

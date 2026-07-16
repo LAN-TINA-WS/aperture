@@ -27,7 +27,7 @@ declare global {
       }
       scanner: {
         scan: () => Promise<Array<{ providerId: string; sessionId: string; title: string | null; sourcePath: string; projectDir: string | null; resumeCommand: string | null; lastActiveAt: number | null }>>
-        messages: (providerId: string, sessionId: string) => Promise<Array<{ role: string; content: string; ts: number | null }>>
+        messages: (providerId: string, sessionId: string, sourcePath?: string) => Promise<Array<{ role: string; content: string; ts: number | null }>>
       }
       provider: {
         list: () => Promise<unknown[]>

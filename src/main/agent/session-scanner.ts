@@ -94,8 +94,12 @@ function claudeProjectsDir() {
 export function findClaudeSessionPath(sessionId: string): string | null {
   const files: string[] = []
   collectFiles(claudeProjectsDir(), '.jsonl', files)
+  return findInFiles(files, sessionId)
+}
+
+/** Scans collected files for a matching sessionId. Shared by all find*SessionPath helpers. */
+function findInFiles(files: string[], sessionId: string): string | null {
   for (const f of files) {
-    // Session files are named <sessionId>.jsonl or <sessionId>-session.jsonl
     const base = basename(f, '.jsonl')
     if (base === sessionId || base.replace(/-session$/, '') === sessionId) return f
     // Also check inside the file for matching session_id
@@ -108,6 +112,70 @@ export function findClaudeSessionPath(sessionId: string): string | null {
     } catch { continue }
   }
   return null
+}
+
+/** Find a Codex session's JSONL file path by sessionId. */
+export function findCodexSessionPath(sessionId: string): string | null {
+  const files: string[] = []
+  for (const dir of codexDir()) collectFiles(dir, '.jsonl', files)
+  return findInFiles(files, sessionId)
+}
+
+/** Find a Gemini session's JSON file path by sessionId. */
+export function findGeminiSessionPath(sessionId: string): string | null {
+  const dir = geminiDir()
+  if (!existsSync(dir)) return null
+  const files: string[] = []
+  collectFiles(dir, '.json', files)
+  for (const f of files) {
+    if (basename(f, '.json') === sessionId) return f
+    try {
+      const data = JSON.parse(readFileSync(f, 'utf-8'))
+      if (data.sessionId === sessionId) return f
+    } catch { continue }
+  }
+  return null
+}
+
+/** Find a Hermes session's JSONL file path by sessionId. */
+export function findHermesSessionPath(sessionId: string): string | null {
+  const sessionsDir = join(hermesDir(), 'sessions')
+  if (!existsSync(sessionsDir)) return null
+  const files: string[] = []
+  collectFiles(sessionsDir, '.jsonl', files)
+  collectFiles(sessionsDir, '.json', files)
+  return findInFiles(files, sessionId)
+}
+
+/** Find an OpenCode session's JSON file path by sessionId. */
+export function findOpenCodeSessionPath(sessionId: string): string | null {
+  const dir = opencodeDir()
+  if (!existsSync(dir)) return null
+  const files: string[] = []
+  collectFiles(dir, '.json', files)
+  return findInFiles(files, sessionId)
+}
+
+/** Find an OpenClaw session's JSONL file path by sessionId. */
+export function findOpenClawSessionPath(sessionId: string): string | null {
+  const dir = openclawDir()
+  if (!existsSync(dir)) return null
+  const files: string[] = []
+  collectFiles(dir, '.jsonl', files)
+  return findInFiles(files, sessionId)
+}
+
+/** Generic session path finder — delegates to provider-specific finders. */
+export function findSessionPath(providerId: string, sessionId: string): string | null {
+  switch (providerId) {
+    case 'claude':   return findClaudeSessionPath(sessionId)
+    case 'codex':    return findCodexSessionPath(sessionId)
+    case 'gemini':   return findGeminiSessionPath(sessionId)
+    case 'hermes':   return findHermesSessionPath(sessionId)
+    case 'opencode':  return findOpenCodeSessionPath(sessionId)
+    case 'openclaw': return findOpenClawSessionPath(sessionId)
+    default:         return null
+  }
 }
 
 registerScanner('claude', () => {
