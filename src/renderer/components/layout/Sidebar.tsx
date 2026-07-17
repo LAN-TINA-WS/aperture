@@ -8,6 +8,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useSessionStore } from '../../stores/sessionStore'
+import { useChatStore } from '../../stores/chatStore'
 
 interface Props {
   onClose: () => void
