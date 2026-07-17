@@ -205,7 +205,7 @@ export default function ChatArea({ onOpenSettings, sidebarOpen, onToggleSidebar 
 
     const assistantId = `msg_${Date.now()}`
     addAssistantMessage(assistantId)
-    setStreaming(true); useChatStore.getState().setStreamingSessionId(activeId ?? useSessionStore.getState().activeId)
+    setStreaming(true)
 
     // 获取活跃Provider
     const providerList = useSettingsStore.getState().providers

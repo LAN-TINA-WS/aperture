@@ -24,7 +24,6 @@ export interface UsageData {
 interface ChatState {
   messages: StreamMessage[]
   isStreaming: boolean
-  streamingSessionId: string | null
   activePid: number | null
   streamStartTime: number | null   // 流开始时刻（毫秒时间戳），用于显示耗时
   turnStartTime: number | null    // 轮次开始时刻（毫秒时间戳），每轮对话独立计时
@@ -60,7 +59,6 @@ let nextMsgId = 1
 export const useChatStore = create<ChatState>((set, get) => ({
   messages: [],
   isStreaming: false,
-  streamingSessionId: null,
   activePid: null,
   streamStartTime: null,
   turnStartTime: null,
@@ -120,7 +118,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
         m.id === id ? { ...m, status: 'done' } : m
       ),
       isStreaming: false,
-  streamingSessionId: null,
       streamStartTime: null,
     }))
   },
@@ -131,7 +128,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
         m.id === id ? { ...m, content: error, status: 'error' } : m
       ),
       isStreaming: false,
-  streamingSessionId: null,
       streamStartTime: null,
     }))
   },
@@ -142,13 +138,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
         m.id === id ? { ...m, status: 'interrupted' } : m
       ),
       isStreaming: false,
-  streamingSessionId: null,
       streamStartTime: null,
     }))
   },
 
   setStreaming: (v) => set({ isStreaming: v, streamStartTime: v ? Date.now() : null }),
-  setStreamingSessionId: (id) => set({ streamingSessionId: id }),
   setActivePid: (pid) => set({ activePid: pid }),
   setTurnStartTime: (t) => set({ turnStartTime: t }),
   setActiveSessionMeta: (meta) => set({ activeSessionMeta: meta }),
