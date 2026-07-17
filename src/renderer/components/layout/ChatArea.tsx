@@ -9,6 +9,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useChatStore } from '../../stores/chatStore'
 import { useSessionStore } from '../../stores/sessionStore'
+import { useComposerPopout } from './useComposerPopout'
 import { useSettingsStore, BACKEND_DEFAULTS, type BackendId } from '../../stores/settingsStore'
 import MessageBubble from '../chat/MessageBubble'
 
@@ -22,6 +23,7 @@ interface Props {
 export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, onToggleSidebar }: Props) {
   const [input, setInput] = useState('')
   const [providerMenuOpen, setProviderMenuOpen] = useState(false)
+  const popout = useComposerPopout()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const {
@@ -400,83 +402,38 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
                   </>
                 )
               })()}
-              <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} style={{ paddingBottom: 100 }} />
             </div>
           </div>
         )}
       </div>
 
-      {/* ─── Composer ──────────────────────── */}
-      <div className="composer-dock">
-        <div className="composer-surface">
-          <button
-            className="flex items-center justify-center rounded-md shrink-0 opacity-50 hover:opacity-80 transition-opacity"
-            style={{ width: 'var(--composer-control-size)', height: 'var(--composer-control-size)', color: 'var(--ap-muted-foreground)' }}
-            title="附件"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              <path d="M8 2v12M4 8h8" />
-            </svg>
-          </button>
-
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-            placeholder={isStreaming ? 'AI 正在回复... (可直接输入)' : '输入消息...'}
-            className="composer-input"
-          />
-
-          {/* Stop button — visible when streaming */}
-          {isStreaming && (
-            <button
-              className="flex items-center justify-center rounded-md shrink-0 font-medium text-xs px-2.5 py-1 transition-colors"
-              style={{
-                backgroundColor: 'var(--ap-destructive)',
-                color: 'white',
-                whiteSpace: 'nowrap',
-              }}
-              onClick={async () => {
-                const pid = useChatStore.getState().activePid
-                if (pid) {
-                  try {
-                    await window.api.agent.kill(pid)
-                  } catch (_) { /* ignore */ }
-                }
-                // Mark last assistant message as interrupted
-                const lastMsg = useChatStore.getState().messages.at(-1)
-                if (lastMsg?.status === 'streaming') {
-                  useChatStore.getState().setMessageInterrupted(lastMsg.id)
-                } else {
-                  setStreaming(false)
-                }
-                setActivePid(null)
-              }}
-            >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" className="mr-1">
-                <rect x="3" y="3" width="10" height="10" rx="1" />
-              </svg>
-              停止
-            </button>
-          )}
-
-          <button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || isStreaming}
-            className="composer-send"
-            style={{
-              backgroundColor: input.trim() && !isStreaming ? 'var(--ap-primary)' : 'transparent',
-              color: input.trim() && !isStreaming ? 'var(--ap-primary-foreground)' : 'var(--ap-muted-foreground)',
-              opacity: input.trim() && !isStreaming ? 1 : 0.4,
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M2 8l12-6-6 12-2-6z" fill="currentColor" />
-            </svg>
-          </button>
+      {/* ─── Composer: Floating popout ─── */}
+      {popout.poppedOut && (
+        <div ref={popout.rootRef} onPointerDown={popout.onPointerDown} data-slot="composer-root" data-popped-out
+          style={{ position: 'fixed', bottom: popout.position.bottom, right: popout.position.right, zIndex: 1000, padding: 5, width: 'min(var(--composer-width,720px), calc(100vw - 2rem))', userSelect: 'none', touchAction: 'none' }}>
+          <div className="composer-surface" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.25)', borderRadius: '1rem' }}>
+            <textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key==='Enter'&&!e.shiftKey) { e.preventDefault(); handleSend() } }} placeholder={isStreaming ? 'AI 正在回复...' : '输入消息...'} className="composer-input" rows={1} />
+            {isStreaming && <button onClick={async () => { const pid = useChatStore.getState().activePid; if (pid) try { await window.api.agent.kill(pid) } catch (_) {}; setStreaming(false) }} className="flex items-center justify-center rounded-md shrink-0 font-medium text-xs px-2.5 py-1" style={{ backgroundColor: 'var(--ap-destructive)', color: 'white' }}>停止</button>}
+            <button onClick={popout.togglePopout} className="flex items-center justify-center rounded-md shrink-0 opacity-40 hover:opacity-70" style={{ width: 24, height: 24, color: 'var(--ap-muted-foreground)' }} title="收回"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg></button>
+            <button onClick={() => handleSend()} disabled={!input.trim() || isStreaming} className="composer-send" style={{ backgroundColor: input.trim() && !isStreaming ? 'var(--ap-primary)' : 'transparent', color: input.trim() && !isStreaming ? 'var(--ap-primary-foreground)' : 'var(--ap-muted-foreground)', opacity: input.trim() && !isStreaming ? 1 : 0.4 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg></button>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* ─── Composer: Docked (absolute bottom center) ─── */}
+      {!popout.poppedOut && (
+        <div onPointerDown={popout.onPointerDown} data-slot="composer-root"
+          style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 'min(var(--composer-width,720px), calc(100% - 2rem))', maxWidth: '100%', paddingTop: '0.5rem', paddingBottom: 'var(--composer-shell-pad-block-end,0.625rem)', zIndex: 30 }}>
+          <div className="composer-surface">
+            <textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key==='Enter'&&!e.shiftKey) { e.preventDefault(); handleSend() } }} placeholder={isStreaming ? 'AI 正在回复... (可直接输入)' : '输入消息...'} className="composer-input" rows={1} />
+            {isStreaming && <button onClick={async () => { const pid = useChatStore.getState().activePid; if (pid) try { await window.api.agent.kill(pid) } catch (_) {}; setStreaming(false) }} className="flex items-center justify-center rounded-md shrink-0 font-medium text-xs px-2.5 py-1" style={{ backgroundColor: 'var(--ap-destructive)', color: 'white' }}>停止</button>}
+            <button onClick={popout.togglePopout} className="flex items-center justify-center rounded-md shrink-0 opacity-40 hover:opacity-70" style={{ width: 24, height: 24, color: 'var(--ap-muted-foreground)' }} title="弹出"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 6 15 12 9 18" /></svg></button>
+            <button onClick={() => handleSend()} disabled={!input.trim() || isStreaming} className="composer-send" style={{ backgroundColor: input.trim() && !isStreaming ? 'var(--ap-primary)' : 'transparent', color: input.trim() && !isStreaming ? 'var(--ap-primary-foreground)' : 'var(--ap-muted-foreground)', opacity: input.trim() && !isStreaming ? 1 : 0.4 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg></button>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
