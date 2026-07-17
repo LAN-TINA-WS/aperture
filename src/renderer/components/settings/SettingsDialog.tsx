@@ -209,7 +209,7 @@ export default function SettingsDialog({ open, onClose }: Props) {
         className="w-[880px] h-[620px] rounded-none overflow-hidden flex shadow-lg"
         style={{
           backgroundColor: 'var(--ap-card)',
-          border: '1px solid var(--ap-border)',
+          border: '2px solid var(--ap-border)',
         }}
       >
         {/* ═══ 左侧导航 (Hermes NavLink 风格) — 宽 200px ═══ */}

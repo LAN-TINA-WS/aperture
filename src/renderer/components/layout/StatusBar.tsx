@@ -142,7 +142,9 @@ function usePermissionMode(): [string, (v: string) => void] {
 
 // ─── 状态栏主组件 ────────────────────────────────
 
-export default function StatusBar() {
+interface StatusBarProps { onOpenGateway?: () => void }
+
+export default function StatusBar({ onOpenGateway }: StatusBarProps) {
   const providers = useSettingsStore((s) => s.providers)
   const activeBackend = useSessionStore((s) => {
     const session = s.sessions.find((x) => x.id === s.activeId)
@@ -178,7 +180,7 @@ export default function StatusBar() {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
         </button>
         {/* 网关 */}
-        <button className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-[var(--ap-muted)] opacity-60 hover:opacity-100" title="网关">
+        <button className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-[var(--ap-muted)] opacity-60 hover:opacity-100" title="网关" onClick={() => onOpenGateway?.()}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/><path d="M12 10v4"/><path d="M10 12h4"/></svg>
         </button>
         {/* 子agent */}

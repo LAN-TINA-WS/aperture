@@ -3,6 +3,7 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { homedir } from 'os'
 import { startAgent, killAgent, sendUserMessage, listActiveAgents } from './agent/manager'
+import { claudeBackend } from './agent/claude'
 import { loadMessages, findSessionPath, scanAll, startWatching, stopWatching } from './agent/session-scanner'
 import type { StartParams } from '../shared/types'
 import { runMigrations } from './db/migrate'
@@ -109,7 +110,22 @@ ipcMain.handle('backend:list', async () => [
   { id: 'opencode', name: 'OpenCode', description: 'OpenCode AI Coding Agent' },
   { id: 'openclaw', name: 'OpenClaw', description: 'OpenClaw AI Agent' },
 ])
-ipcMain.handle('backend:detect', async () => ({ installed: true }))
+ipcMain.handle('backend:detect', async (_event, backendId: string) => {
+  if (backendId === 'claude') {
+    return await claudeBackend.detect()
+  }
+  // Generic fallback: run `where <binary>` or `which <binary>`
+  try {
+    const cmd = process.platform === 'win32'
+      ? `where ${backendId} 2>nul`
+      : `which ${backendId} 2>/dev/null`
+    const { execSync } = await import('child_process')
+    const result = execSync(cmd, { encoding: 'utf-8' }).trim()
+    return { installed: result.length > 0, path: result || undefined }
+  } catch {
+    return { installed: false, error: `Backend not found: ${backendId}` }
+  }
+})
 
 // ─── IPC: Session (DB) ──────────────────────────
 

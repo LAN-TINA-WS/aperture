@@ -8,10 +8,12 @@ import Sidebar from './components/layout/Sidebar'
 import ChatArea from './components/layout/ChatArea'
 import StatusBar from './components/layout/StatusBar'
 import SettingsDialog from './components/settings/SettingsDialog'
+import GatewayDialog from './components/gateway/GatewayDialog'
 import { useSettingsStore } from './stores/settingsStore'
 
 export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [gatewayOpen, setGatewayOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   // Sync theme from settings store
@@ -29,6 +31,7 @@ export default function App() {
   // Load settings on mount
   useEffect(() => {
     useSettingsStore.getState().load()
+
   }, [])
 
   return (
@@ -39,12 +42,14 @@ export default function App() {
       >
         <ChatArea
           onOpenSettings={() => setSettingsOpen(true)}
+          onOpenGateway={() => setGatewayOpen(true)}
           sidebarOpen={sidebarOpen}
           onToggleSidebar={() => setSidebarOpen((v) => !v)}
         />
       </AppShell>
-      <StatusBar />
+      <StatusBar onOpenGateway={() => setGatewayOpen(true)} />
       {settingsOpen && <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />}
+      {gatewayOpen && <GatewayDialog open={gatewayOpen} onClose={() => setGatewayOpen(false)} />}
     </div>
   )
 }
