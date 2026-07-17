@@ -20,7 +20,12 @@ const api = {
     list: () => ipcRenderer.invoke('session:list'),
     get: (id: string) => ipcRenderer.invoke('session:get', id),
     create: (opts: unknown) => ipcRenderer.invoke('session:create', opts),
-    delete: (id: string) => ipcRenderer.invoke('session:delete', id),
+    delete: (id: string, meta?: { sourcePath?: string; providerId?: string }) => {
+      if (meta?.sourcePath || meta?.providerId) {
+        return ipcRenderer.invoke('session:delete', { id, sourcePath: meta.sourcePath, providerId: meta.providerId })
+      }
+      return ipcRenderer.invoke('session:delete', id)
+    },
     rename: (id: string, title: string) => ipcRenderer.invoke('session:rename', id, title),
     renameScanned: (sessionId: string, title: string) => ipcRenderer.invoke('session:rename-scanned', sessionId, title),
     pin: (id: string, pinned: boolean) => ipcRenderer.invoke('session:pin', id, pinned),

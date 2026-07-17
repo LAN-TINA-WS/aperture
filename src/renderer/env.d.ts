@@ -19,7 +19,7 @@ declare global {
         list: () => Promise<unknown[]>
         get: (id: string) => Promise<unknown>
         create: (opts: unknown) => Promise<unknown>
-        delete: (id: string) => Promise<void>
+        delete: (id: string, meta?: { sourcePath?: string; providerId?: string }) => Promise<{ deleted: boolean; fileDeleted?: boolean; error?: string }>
         rename: (id: string, title: string) => Promise<void>
         renameScanned: (sessionId: string, title: string) => Promise<void>
         pin: (id: string, pinned: boolean) => Promise<void>

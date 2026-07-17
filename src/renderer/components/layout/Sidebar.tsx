@@ -170,7 +170,7 @@ export default function Sidebar({ onClose }: Props) {
     setContextMenu(null)
     const remaining = scanned.filter((x) => x.sessionId !== s.sessionId)
     try {
-      await window.api.session.delete(s.sessionId)
+      await window.api.session.delete(s.sessionId, { sourcePath: s.sourcePath, providerId: s.providerId })
     } catch {
       /* ignore */
     }

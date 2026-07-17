@@ -3,8 +3,10 @@
 // ═══════════════════════════════════════════════
 
 import { randomUUID } from 'crypto'
+import { unlinkSync, existsSync } from 'fs'
 import type { SqlJsStatic, Database as SqlJsDb, BindParams } from 'sql.js'
 import { getDb, saveDb } from './connection'
+import { findSessionPath } from '../agent/session-scanner'
 import type { Session, Message } from '../../shared/types'
 
 type Row = Record<string, unknown>
@@ -59,8 +61,35 @@ export async function createSession(backendId: string, cwd: string, model?: stri
   return (await getSession(id))!
 }
 
-export async function deleteSession(id: string): Promise<void> {
+export async function deleteSession(
+  id: string,
+  sessionMeta?: { sourcePath?: string; providerId?: string }
+): Promise<{ deleted: boolean; fileDeleted?: boolean; error?: string }> {
+  // Step 0: Resolve filesystem path (use provided sourcePath, or find by providerId+sessionId)
+  let sourcePath = sessionMeta?.sourcePath
+  if (!sourcePath && sessionMeta?.providerId) {
+    sourcePath = findSessionPath(sessionMeta.providerId, id) ?? undefined
+  }
+
+  // Step 1: Delete the session file from disk
+  let fileDeleted = false
+  if (sourcePath && existsSync(sourcePath)) {
+    try {
+      unlinkSync(sourcePath)
+      fileDeleted = true
+    } catch (e: any) {
+      // Non-fatal: file deletion is best-effort; DB cleanup still runs
+      console.error(`[deleteSession] Failed to delete file ${sourcePath}:`, e.message)
+    }
+  }
+
+  // Step 2: Delete messages first (defense-in-depth — sql.js FK enforcement is unreliable)
+  await dbRun('DELETE FROM messages WHERE session_id = ?', [id])
+
+  // Step 3: Delete the session row
   await dbRun('DELETE FROM sessions WHERE id = ?', [id])
+
+  return { deleted: true, fileDeleted }
 }
 
 export async function renameSession(id: string, title: string): Promise<void> {

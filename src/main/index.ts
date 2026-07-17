@@ -115,7 +115,12 @@ ipcMain.handle('backend:detect', async () => ({ installed: true }))
 ipcMain.handle('session:list', async () => dbListSessions())
 ipcMain.handle('session:get', async (_e, id: string) => ({ session: getSession(id), messages: [] }))
 ipcMain.handle('session:create', async (_e, o: { backendId: string; cwd: string; model?: string }) => createSession(o.backendId, o.cwd, o.model))
-ipcMain.handle('session:delete', async (_e, id: string) => deleteSession(id))
+ipcMain.handle('session:delete', async (_e, idOrParams: string | { id: string; sourcePath?: string; providerId?: string }) => {
+  if (typeof idOrParams === 'string') {
+    return deleteSession(idOrParams)
+  }
+  return deleteSession(idOrParams.id, { sourcePath: idOrParams.sourcePath, providerId: idOrParams.providerId })
+})
 ipcMain.handle('session:rename', async (_e, id: string, title: string) => renameSession(id, title))
 ipcMain.handle('session:rename-scanned', async (_e, sessionId: string, title: string) => {
   // Rename in filesystem via DB rename (scanned sessions get synced)

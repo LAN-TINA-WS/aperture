@@ -13,7 +13,7 @@ interface SessionState {
   load: () => Promise<void>
   create: (backendId: string, cwd?: string, model?: string) => Promise<Session>
   select: (id: string) => void
-  remove: (id: string) => Promise<void>
+  remove: (id: string, meta?: { sourcePath?: string; providerId?: string }) => Promise<void>
   rename: (id: string, title: string) => Promise<void>
   togglePin: (id: string, pinned: boolean) => Promise<void>
   archive: (id: string) => Promise<void>
@@ -47,8 +47,17 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
   select: (id) => set({ activeId: id }),
 
-  remove: async (id) => {
-    await window.api.session.delete(id)
+  remove: async (id, meta) => {
+    try {
+      const result = await window.api.session.delete(id, meta)
+      if (!result?.deleted) {
+        console.error('[sessionStore] Delete returned non-success:', result)
+        return
+      }
+    } catch (err) {
+      console.error('[sessionStore] Delete failed:', err)
+      return
+    }
     set((st) => ({
       sessions: st.sessions.filter((s) => s.id !== id),
       activeId: st.activeId === id ? null : st.activeId
