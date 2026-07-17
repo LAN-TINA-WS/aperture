@@ -308,7 +308,7 @@ const defaultProxy: ProxyConfig = {
 }
 
 const defaultGeneral: GeneralSettings = {
-  theme: 'light', fontSize: '14px', language: 'zh', launchAtStartup: false,
+  theme: 'light', fontSize: '16px', language: 'zh', launchAtStartup: false,
   visibleBackends: { claude: true, 'claude-desktop': false, codex: true, gemini: true, hermes: true, opencode: true, openclaw: true },
   showInTray: true, minimizeToTrayOnClose: true,
   skillSyncMethod: 'auto', skillStorageLocation: 'cc_switch',

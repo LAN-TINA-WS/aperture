@@ -20,7 +20,7 @@ export default function App() {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
-  const fontSize = useSettingsStore((s) => s.general.fontSize ?? '14px')
+  const fontSize = useSettingsStore((s) => s.general.fontSize ?? '16px')
 
   useEffect(() => {
     document.documentElement.style.fontSize = fontSize

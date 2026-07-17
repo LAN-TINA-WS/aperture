@@ -65,6 +65,8 @@ export function startAgent(
   if (params.env) Object.assign(env, params.env)
 
   // Windows: spawn via cmd.exe /d /c
+  console.log(`[agent ${pid}] spawning cmd.exe /d /c ${cmd.command} ${cmd.args.join(' ')}`)
+  console.log(`[agent ${pid}] cwd: ${cmd.cwd}`)
   const child = spawn('cmd.exe', ['/d', '/c', cmd.command, ...cmd.args], {
     cwd: cmd.cwd,
     env: env as Record<string, string>,
@@ -82,14 +84,23 @@ export function startAgent(
 
   // ── stdout NDJSON parser ──────────────────
   child.stdout?.on('data', (data: Buffer) => {
-    session.buffer += data.toString()
+    const chunk = data.toString()
+    console.log(`[agent ${pid} stdout:${chunk.length}B]`, chunk.slice(0, 200))
+    session.buffer += chunk
     const lines = session.buffer.split('\n')
     session.buffer = lines.pop() || ''
 
     for (const line of lines) {
       if (!line.trim()) continue
-      const events = backend.parseLine(line)
+      let events: ReturnType<typeof backend.parseLine> = []
+      try {
+        events = backend.parseLine(line)
+      } catch (parseErr: any) {
+        console.error(`[agent ${pid} parse error]`, parseErr.message, 'RAW:', line.slice(0, 200))
+      }
       for (const evt of events) {
+        console.log(`[agent ${pid} event] type=${evt.type}` + ('subtype' in evt ? ` subtype=${(evt as any).subtype}` : '') + ('text' in evt ? ` text=${JSON.stringify((evt as any).text).slice(0, 80)}` : ''))
+
         // Capture sessionId from system/init
         if (evt.type === 'system' && evt.subtype === 'init') {
           const data = evt.data as Record<string, unknown> | undefined
@@ -119,6 +130,21 @@ export function startAgent(
 
   // ── lifecycle ─────────────────────────────
   child.on('exit', (code) => {
+    console.log(`[agent ${pid}] process exited code=${code}, residual buffer=${JSON.stringify(session.buffer.slice(0, 200))}`)
+    // Flush any residual buffer
+    if (session.buffer.trim()) {
+      const flushed = backend.parseLine(session.buffer)
+      for (const evt of flushed) {
+        console.log(`[agent ${pid} flush event] type=${evt.type}`)
+        if (evt.type === 'done') {
+          window.webContents.send('stream:done', { pid, exitCode: evt.exitCode ?? 0, usage: evt.usage, cost: evt.cost })
+        } else if (evt.type === 'error') {
+          window.webContents.send('stream:error', { pid, message: evt.message })
+        } else {
+          window.webContents.send('stream:event', { pid, event: evt })
+        }
+      }
+    }
     window.webContents.send('stream:done', { pid, exitCode: code ?? 0 })
     activeSessions.delete(pid)
   })

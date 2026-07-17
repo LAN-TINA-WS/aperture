@@ -100,7 +100,10 @@ const api = {
 
   // Stream listeners (Main → Renderer push)
   onStreamEvent: (cb: (event: unknown) => void) => {
-    const handler = (_: unknown, data: unknown) => cb(data)
+    const handler = (_: unknown, data: unknown) => {
+      console.log('[preload] stream:event received', JSON.stringify(data).slice(0, 200))
+      cb(data)
+    }
     ipcRenderer.on('stream:event', handler)
     return () => ipcRenderer.removeListener('stream:event', handler)
   },

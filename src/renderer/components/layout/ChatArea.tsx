@@ -102,6 +102,7 @@ export default function ChatArea({ onOpenSettings, sidebarOpen, onToggleSidebar 
       const { event } = data
       const lastMsg = useChatStore.getState().messages.at(-1)
       const msgId = lastMsg?.id ?? ''
+      console.log('[ChatArea] onStreamEvent type=' + event.type, 'msgId=' + msgId, 'text=' + (event.text ? JSON.stringify(event.text).slice(0, 80) : ''))
       switch (event.type) {
         case 'system':
           if (event.subtype === 'init' && event.data?.session_id) {
@@ -113,18 +114,7 @@ export default function ChatArea({ onOpenSettings, sidebarOpen, onToggleSidebar 
         case 'thinking': appendThinking(msgId, event.text); break
         case 'content': appendContent(msgId, event.text); break
         case 'tool_use': addToolUse(msgId, event.id, event.name, event.input); break
-        case 'done':
-          if (event.usage) {
-            useChatStore.getState().setUsage({
-              inputTokens: event.usage.input_tokens ?? 0,
-              outputTokens: event.usage.output_tokens ?? 0,
-              cacheRead: event.usage.cache_read_input_tokens ?? 0,
-              cacheWrite: event.usage.cache_creation_input_tokens ?? 0,
-            })
-          }
-          setMessageDone(msgId)
-          break
-        case 'error': useChatStore.getState().setMessageError(msgId, event.message); break
+        // Note: 'done' and 'error' come via stream:done / stream:error channels, not stream:event
       }
     })
     return () => cleanup?.()
@@ -145,8 +135,19 @@ export default function ChatArea({ onOpenSettings, sidebarOpen, onToggleSidebar 
   // stream:done — handle completion and interruption
   useEffect(() => {
     const cleanup = window.api.onStreamDone((data: any) => {
+      console.log('[ChatArea] onStreamDone', JSON.stringify(data))
       const lastMsg = useChatStore.getState().messages.at(-1)
       const msgId = lastMsg?.id ?? ''
+
+      // Process usage/cost from NDJSON result event
+      if (data?.usage) {
+        useChatStore.getState().setUsage({
+          inputTokens: data.usage.input_tokens ?? 0,
+          outputTokens: data.usage.output_tokens ?? 0,
+          cacheRead: data.usage.cache_read_input_tokens ?? 0,
+          cacheWrite: data.usage.cache_creation_input_tokens ?? 0,
+        })
+      }
 
       if (data?.exitCode === null || data?.killed) {
         useChatStore.getState().setTurnStartTime(null)
@@ -204,7 +205,7 @@ export default function ChatArea({ onOpenSettings, sidebarOpen, onToggleSidebar 
 
     const assistantId = `msg_${Date.now()}`
     addAssistantMessage(assistantId)
-    setStreaming(true)
+    setStreaming(true); useChatStore.getState().setStreamingSessionId(activeId ?? useSessionStore.getState().activeId)
 
     // 获取活跃Provider
     const providerList = useSettingsStore.getState().providers

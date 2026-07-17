@@ -277,6 +277,8 @@ export default function Sidebar({ onClose }: Props) {
                     group.sessions.map((s) => {
                       const isActive = activeId === s.sessionId
                       const isLoading = loadingId === s.sessionId
+                      const streamingId = useChatStore.getState().streamingSessionId
+                      const isStreaming = streamingId === s.sessionId && s.sessionId !== activeId
                       return (
                         <button
                           key={s.sessionId}
@@ -286,7 +288,7 @@ export default function Sidebar({ onClose }: Props) {
                         >
                           <div className="sidebar-row-body">
                             {/* Dot — Hermes SidebarRowDot */}
-                            <span className={`sidebar-dot ${isActive ? 'active' : ''}`} />
+                            <span className={`sidebar-dot ${isActive ? 'active' : ''} ${isStreaming ? 'breathing' : ''}`} />
                             {/* Title — inline edit when renaming */}
                             {editingId === s.sessionId ? (
                               <input
