@@ -1,6 +1,6 @@
 {
   "name": "aperture",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Aperture — Universal AI Agent Desktop Shell. One window, any agent.",
   "main": "./out/main/index.js",
   "author": "Axiom + 蓝天",

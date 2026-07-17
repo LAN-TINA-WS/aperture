@@ -345,7 +345,7 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
       </div>
 
       {/* ─── Messages area ──────────────────── */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto overscroll-contain relative">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-4 text-center" style={{ color: 'var(--ap-muted-foreground)' }}>
@@ -362,7 +362,7 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
           /* Centering wrapper — flex justify-center guarantees symmetry */
           <div className="flex justify-center">
             <div
-              className="w-full max-w-[var(--composer-width)] min-w-0 flex flex-col px-6 py-4"
+              className="w-full max-w-[min(var(--composer-width),calc(100%-2rem))] min-w-0 flex flex-col py-4"
               style={{ gap: 'var(--conv-turn-gap)' }}
             >
               {(() => {
@@ -412,7 +412,7 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
       {popout.poppedOut && (
         <div ref={popout.rootRef} onPointerDown={popout.onPointerDown} data-slot="composer-root" data-popped-out
           style={{ position: 'fixed', bottom: popout.position.bottom, right: popout.position.right, zIndex: 1000, padding: 5, width: 'min(var(--composer-width,720px), calc(100vw - 2rem))', userSelect: 'none', touchAction: 'none' }}>
-          <div className="composer-surface" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.25)', borderRadius: '1rem' }}>
+          <div className="composer-surface" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.25)', borderRadius: '4px' }}>
             <textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key==='Enter'&&!e.shiftKey) { e.preventDefault(); handleSend() } }} placeholder={isStreaming ? 'AI 正在回复...' : '输入消息...'} className="composer-input" rows={1} />
             {isStreaming && <button onClick={async () => { const pid = useChatStore.getState().activePid; if (pid) try { await window.api.agent.kill(pid) } catch (_) {}; setStreaming(false) }} className="flex items-center justify-center rounded-md shrink-0 font-medium text-xs px-2.5 py-1" style={{ backgroundColor: 'var(--ap-destructive)', color: 'white' }}>停止</button>}
             <button onClick={popout.togglePopout} className="flex items-center justify-center rounded-md shrink-0 opacity-40 hover:opacity-70" style={{ width: 24, height: 24, color: 'var(--ap-muted-foreground)' }} title="收回"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg></button>

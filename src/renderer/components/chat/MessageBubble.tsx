@@ -53,7 +53,7 @@ const UserMsg = memo(function UserMsg({ msg }: Props) {
       {/* Bubble — standalone-glass matching Hermes USER_BUBBLE_BASE_CLASS */}
       <button
         type="button"
-        className="standalone-glass relative flex w-full min-w-0 max-w-full flex-col gap-1.5 overflow-y-auto rounded-xl px-3 py-2 text-left select-text"
+        className="standalone-glass relative flex w-full min-w-0 max-w-full flex-col gap-1.5 overflow-y-auto rounded px-3 py-2 text-left select-text"
         style={{
           fontSize: 'var(--conv-text-size)',
           lineHeight: 'var(--human-msg-line-height)',

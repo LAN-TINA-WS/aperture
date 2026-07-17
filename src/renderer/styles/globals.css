@@ -180,7 +180,7 @@ html, body, #root {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 1rem;
+  border-radius: 4px;
   border: 1px solid color-mix(in srgb, var(--ap-composer-ring) 18%, var(--ap-input));
   background: color-mix(in srgb, var(--ap-card) 72%, transparent);
   backdrop-filter: blur(0.75rem) saturate(1.12);
@@ -201,6 +201,7 @@ html, body, #root {
   line-height: var(--conv-line-height);
   color: var(--ap-foreground);
   min-height: var(--composer-input-min-height);
+  padding: 0;
   resize: none;
 }
 .composer-input::placeholder { color: var(--ap-muted-foreground); }
@@ -240,7 +241,7 @@ html, body, #root {
 .standalone-glass {
   background: color-mix(in srgb, var(--ap-primary) 6%, var(--ap-background));
   border: 1px solid var(--ap-user-bubble-border);
-  border-radius: 0.75rem;
+  border-radius: 4px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
