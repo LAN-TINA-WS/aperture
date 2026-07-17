@@ -237,7 +237,7 @@ export default function ChatArea({ onOpenSettings, sidebarOpen, onToggleSidebar 
   return (
     <div className="flex flex-col h-full chat-surface">
       {/* ─── Titlebar ──────────────────────── */}
-      <div className="titlebar-header">
+      <div className="titlebar-header text-[14px]">
         {/* Sidebar toggle — visible when sidebar is hidden */}
         {!sidebarOpen && (
           <button onClick={onToggleSidebar} className="titlebar-btn" title="显示侧边栏">

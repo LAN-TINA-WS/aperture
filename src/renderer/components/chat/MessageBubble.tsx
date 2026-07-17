@@ -55,7 +55,7 @@ const UserMsg = memo(function UserMsg({ msg }: Props) {
         type="button"
         className="standalone-glass relative flex w-full min-w-0 max-w-full flex-col gap-1.5 overflow-y-auto rounded-xl px-3 py-2 text-left select-text"
         style={{
-          fontSize: 'var(--chat-font-size, 14px)',
+          fontSize: 'var(--conv-text-size)',
           lineHeight: 'var(--human-msg-line-height)',
           color: 'color-mix(in srgb, var(--ap-foreground) 95%, transparent)',
           borderColor: 'var(--ap-user-bubble-border)',
@@ -231,7 +231,7 @@ const AssistantMsg = memo(function AssistantMsg({ msg }: Props) {
       <div
         className="flex flex-col"
         style={{
-          fontSize: 'var(--chat-font-size, 14px)',
+          fontSize: 'var(--conv-text-size)',
           lineHeight: 'var(--conv-line-height)',
           color: 'var(--ap-foreground)',
           gap: 'var(--turn-block-gap)',

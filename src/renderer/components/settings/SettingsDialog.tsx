@@ -248,7 +248,7 @@ export default function SettingsDialog({ open, onClose }: Props) {
         </nav>
 
         {/* ═══ 右侧内容区 — CC Switch 风格 ═══ */}
-        <main className="flex-1 min-w-0 overflow-y-auto px-10 py-8">
+        <main className="flex-1 min-w-0 overflow-y-auto px-10 py-8 text-[14px]">
           {section === 'providers' && <ProviderSection />}
           {section === 'mcp' && <McpSection />}
           {section === 'proxy' && <ProxySection />}

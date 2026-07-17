@@ -23,8 +23,7 @@ export default function App() {
   const fontSize = useSettingsStore((s) => s.general.fontSize ?? '14px')
 
   useEffect(() => {
-    // Only apply to chat content, not the whole UI
-    document.documentElement.style.setProperty('--chat-font-size', fontSize)
+    document.documentElement.style.fontSize = fontSize
   }, [fontSize])
 
   // Load settings on mount

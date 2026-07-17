@@ -181,9 +181,10 @@ export async function debugCCSwitch(): Promise<Record<string, unknown>> {
 /* ─── 用量读取 ────────────────────────────────── */
 
 /**
- * 从 CC Switch SQLite 读取 usage_daily_rollups 表
+ * 从 CC Switch SQLite 读取用量数据
+ * 优先查 usage_daily_rollups，为空时 fallback 到 proxy_request_logs 聚合
  * 按日期聚合 input_tokens, output_tokens, request_count, total_cost_usd
- * 返回最近 90 天的数据
+ * 返回最近 days 天的数据
  */
 export async function readCCSwitchUsage(days = 90): Promise<UsageRow[]> {
   if (!existsSync(DB_PATH)) return []
@@ -201,7 +202,8 @@ export async function readCCSwitchUsage(days = 90): Promise<UsageRow[]> {
     const startStr = startDate.toISOString().slice(0, 10)
     const endStr = endDate.toISOString().slice(0, 10)
 
-    const result = db.exec(
+    // 1. 先查 rollups
+    let result = db.exec(
       `SELECT
         date,
         SUM(input_tokens) AS input_tokens,
@@ -214,6 +216,27 @@ export async function readCCSwitchUsage(days = 90): Promise<UsageRow[]> {
       ORDER BY date ASC`,
       [startStr, endStr],
     )
+
+    // 2. rollups 为空 → fallback 到 proxy_request_logs 聚合
+    if (!result.length || !result[0].values.length) {
+      const startTs = Math.floor(startDate.getTime() / 1000)
+      const endTs = Math.floor(endDate.getTime() / 1000)
+
+      result = db.exec(
+        `SELECT
+          date(created_at, 'unixepoch') AS date,
+          SUM(input_tokens) AS input_tokens,
+          SUM(output_tokens) AS output_tokens,
+          COUNT(*) AS request_count,
+          SUM(CAST(total_cost_usd AS REAL)) AS total_cost_usd
+        FROM proxy_request_logs
+        WHERE created_at >= ? AND created_at < ?
+        GROUP BY date(created_at, 'unixepoch')
+        ORDER BY date ASC`,
+        [startTs, endTs],
+      )
+    }
+
     db.close()
 
     if (!result.length || !result[0].values.length) return []

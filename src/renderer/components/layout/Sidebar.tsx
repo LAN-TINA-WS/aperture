@@ -199,7 +199,7 @@ export default function Sidebar({ onClose }: Props) {
   }))
 
   return (
-    <div className="flex flex-col h-full sidebar-surface">
+    <div className="flex flex-col h-full sidebar-surface text-[14px]">
       {/* ─── Header ─────────────────────────── */}
       <div
         className="flex items-center justify-between px-4"
