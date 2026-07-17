@@ -3,7 +3,7 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { homedir } from 'os'
 import { startAgent, killAgent, sendUserMessage, listActiveAgents } from './agent/manager'
-import { loadMessages, findSessionPath, scanAll } from './agent/session-scanner'
+import { loadMessages, findSessionPath, scanAll, startWatching, stopWatching } from './agent/session-scanner'
 import type { StartParams } from '../shared/types'
 import { runMigrations } from './db/migrate'
 import {
@@ -61,10 +61,11 @@ app.whenReady().then(() => {
   runMigrations()
   Menu.setApplicationMenu(null)
   createWindow()
+  startWatching(mainWindow!)
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
 })
 
-app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
+app.on('window-all-closed', () => { stopWatching(); if (process.platform !== 'darwin') app.quit() })
 
 // ─── IPC: Agent (CLI spawn) ─────────────────────
 

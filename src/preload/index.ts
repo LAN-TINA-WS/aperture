@@ -35,7 +35,12 @@ const api = {
   // Session scanner
   scanner: {
     scan: () => ipcRenderer.invoke('session:scan'),
-    messages: (providerId: string, sessionId: string, sourcePath?: string) => ipcRenderer.invoke('session:messages', providerId, sessionId, sourcePath)
+    messages: (providerId: string, sessionId: string, sourcePath?: string) => ipcRenderer.invoke('session:messages', providerId, sessionId, sourcePath),
+    onScanResult: (cb: (sessions: unknown) => void) => {
+      const handler = (_: unknown, sessions: unknown) => cb(sessions)
+      ipcRenderer.on('session:scanned', handler)
+      return () => ipcRenderer.removeListener('session:scanned', handler)
+    }
   },
 
   // Provider

@@ -3,9 +3,10 @@
 // Ported from CC Switch session_manager/providers/*
 // ═══════════════════════════════════════════════
 
-import { readdirSync, readFileSync, existsSync, statSync } from 'fs'
+import { readdirSync, readFileSync, existsSync, statSync, watch } from 'fs'
 import { join, basename } from 'path'
 import { homedir } from 'os'
+import type { BrowserWindow } from 'electron'
 
 // ─── Types ─────────────────────────────────────
 
@@ -520,4 +521,27 @@ function parseOpenClawMeta(path: string): SessionMeta | null {
   }
   if (!sessionId) sessionId = basename(path, '.jsonl')
   return { providerId: 'openclaw', sessionId, title, projectDir: null, createdAt: firstTs, lastActiveAt: firstTs, sourcePath: path, resumeCommand: null }
+}
+
+// ─── File-system watcher ─────────────────────
+
+let watcher: ReturnType<typeof watch> | null = null
+
+export function startWatching(window: BrowserWindow) {
+  stopWatching()
+  const dir = claudeProjectsDir()
+  if (!existsSync(dir)) return
+
+  let timer: NodeJS.Timeout | null = null
+  watcher = watch(dir, { recursive: true }, () => {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      const sessions = scanAll()
+      window.webContents.send('session:scanned', sessions)
+    }, 500)
+  })
+}
+
+export function stopWatching() {
+  if (watcher) { watcher.close(); watcher = null }
 }

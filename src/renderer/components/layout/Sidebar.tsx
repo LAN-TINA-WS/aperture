@@ -62,6 +62,14 @@ export default function Sidebar({ onClose }: Props) {
       .catch((err) => console.error('[Sidebar] scanner.scan() failed:', err))
   }, [])
 
+  // Listen for real-time push updates from the main process file watcher
+  useEffect(() => {
+    const cleanup = window.api.scanner.onScanResult((sessions) => {
+      setScanned(sessions as ScannedSession[])
+    })
+    return cleanup
+  }, [])
+
   // Auto-focus rename input when editing starts
   useEffect(() => {
     if (editingId && editInputRef.current) {
