@@ -21,7 +21,7 @@ export default function AboutSection() {
           <div>
             <h3 className="text-base font-semibold">Aperture</h3>
             <p className="text-xs" style={{ color: 'var(--ap-muted-foreground)' }}>
-              v0.1.0 — Universal AI Agent Desktop Shell
+              v0.1.1 — Universal AI Agent Desktop Shell
             </p>
           </div>
         </div>
