@@ -56,25 +56,31 @@ function Row({ label, value, color, bold }: { label: string; value: number; colo
 
 function ContextUsagePanel({ onClose }: { onClose: () => void }) {
   const usage = useChatStore(s => s.usage)
-  if (!usage) return null
-
-  const total = usage.inputTokens + usage.outputTokens + usage.cacheRead + usage.cacheWrite
 
   return (
     <div
       className="absolute bottom-5 right-0 w-64 p-4 rounded-sm border shadow-lg z-50"
       style={{ backgroundColor: 'var(--ap-card)', borderColor: 'var(--ap-border)' }}
     >
-      <div className="text-xs font-semibold mb-3" style={{ color: 'var(--ap-foreground)' }}>上下文用量</div>
-      <div className="space-y-2 text-[11px]">
-        <Row label="输入" value={usage.inputTokens} color="#3b82f6" />
-        <Row label="输出" value={usage.outputTokens} color="#22c55e" />
-        <Row label="缓存读取" value={usage.cacheRead} color="#a855f7" />
-        <Row label="缓存写入" value={usage.cacheWrite} color="#f97316" />
-        <div className="border-t pt-2 mt-2" style={{ borderColor: 'var(--ap-border)' }}>
-          <Row label="总计" value={total} color="var(--ap-foreground)" bold />
-        </div>
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-xs font-semibold" style={{ color: 'var(--ap-foreground)' }}>上下文用量</div>
+        <button onClick={onClose} className="text-xs opacity-50 hover:opacity-100" style={{ color: 'var(--ap-muted-foreground)' }}>✕</button>
       </div>
+      {usage ? (
+        <div className="space-y-2 text-[11px]">
+          <Row label="输入" value={usage.inputTokens} color="#3b82f6" />
+          <Row label="输出" value={usage.outputTokens} color="#22c55e" />
+          <Row label="缓存读取" value={usage.cacheRead} color="#a855f7" />
+          <Row label="缓存写入" value={usage.cacheWrite} color="#f97316" />
+          <div className="border-t pt-2 mt-2" style={{ borderColor: 'var(--ap-border)' }}>
+            <Row label="总计" value={usage.inputTokens + usage.outputTokens + usage.cacheRead + usage.cacheWrite} color="var(--ap-foreground)" bold />
+          </div>
+        </div>
+      ) : (
+        <div className="text-[11px] py-4 text-center" style={{ color: 'var(--ap-muted-foreground)' }}>
+          发送消息后显示 token 用量
+        </div>
+      )}
     </div>
   )
 }
@@ -166,10 +172,26 @@ export default function StatusBar() {
       }}
     >
       {/* 左侧 */}
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="truncate">{backendDisplayName}</span>
+      <div className="flex items-center gap-0.5 min-w-0">
+        {/* 命令面板 */}
+        <button className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-[var(--ap-muted)] opacity-60 hover:opacity-100" title="命令面板">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+        </button>
+        {/* 网关 */}
+        <button className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-[var(--ap-muted)] opacity-60 hover:opacity-100" title="网关">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="8" height="8" rx="1"/><path d="M12 10v4"/><path d="M10 12h4"/></svg>
+        </button>
+        {/* 子agent */}
+        <button className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-[var(--ap-muted)] opacity-60 hover:opacity-100" title="子 Agent">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </button>
+        {/* Cron */}
+        <button className="w-5 h-5 flex items-center justify-center rounded-sm hover:bg-[var(--ap-muted)] opacity-60 hover:opacity-100" title="Cron">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </button>
+        {/* 工作目录 */}
         {agentCwd && (
-          <span className="truncate opacity-70" title={agentCwd}>
+          <span className="truncate opacity-70 ml-1" title={agentCwd}>
             {agentCwd.split('\\').pop() || agentCwd}
           </span>
         )}
