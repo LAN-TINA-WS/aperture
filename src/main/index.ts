@@ -23,6 +23,7 @@ function createWindow(): void {
     width: 1400, height: 900,
     minWidth: 900, minHeight: 600,
     title: 'Aperture',
+    icon: join(__dirname, '../../resources/icon.ico'),
     frame: false,
     backgroundColor: '#F8FAFF',
     show: false,
