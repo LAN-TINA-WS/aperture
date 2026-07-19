@@ -663,10 +663,19 @@ function AgentConfigScanner() {
       // Auto-import: immediately add scanned agents as Providers
       if (result.length > 0) {
         const providers = await window.api.agentConfig.import()
+        // Dedup: skip providers that already exist (match by name + apiBase)
+        const existing = useSettingsStore.getState().providers
+        let added = 0
         for (const p of providers) {
-          addProvider(p as Omit<ProviderConfig, 'id' | 'createdAt'>)
+          const exists = existing.some(
+            (ep) => ep.name === (p as any).name && ep.apiBase === (p as any).apiBase
+          )
+          if (!exists) {
+            addProvider(p as Omit<ProviderConfig, 'id' | 'createdAt'>)
+            added++
+          }
         }
-        setToast(`✅ 扫描到 ${result.length} 个 Agent，已自动导入 ${providers.length} 个 Provider`)
+        setToast(`✅ 扫描到 ${result.length} 个 Agent${added < providers.length ? `，已跳过 ${providers.length - added} 个重复` : ''}，已导入 ${added} 个 Provider`)
       } else {
         setToast('未发现本地 Agent 配置')
       }

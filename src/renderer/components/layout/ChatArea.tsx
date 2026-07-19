@@ -106,8 +106,9 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
 
       // 只处理属于当前活跃会话的事件 — 防止多会话串线
       const activeMeta = useChatStore.getState().activeSessionMeta
-      if (incomingSessionId && activeMeta?.sessionId && incomingSessionId !== activeMeta.sessionId) {
-        console.log('[ChatArea] skipping event from other session:', incomingSessionId, 'active:', activeMeta.sessionId, 'type:', event.type)
+      // Only filter when session is well-known; allow first-session events through
+      if (incomingSessionId && activeMeta?.sessionId && activeMeta?.sessionId !== incomingSessionId) {
+        console.log('[ChatArea] SKIP event from other session:', incomingSessionId, 'active:', activeMeta.sessionId, 'type:', event.type)
         return
       }
 
@@ -136,8 +137,8 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
     const cleanup = window.api.onStreamError((data: any) => {
       // 只处理属于当前活跃会话的事件 — 防止多会话串线
       const activeMeta = useChatStore.getState().activeSessionMeta
-      if (data.sessionId && activeMeta?.sessionId && data.sessionId !== activeMeta.sessionId) {
-        console.log('[ChatArea] skipping error from other session:', data.sessionId, 'active:', activeMeta.sessionId)
+      if (data.sessionId && activeMeta?.sessionId && activeMeta?.sessionId !== data.sessionId) {
+        console.log('[ChatArea] SKIP error from other session:', data.sessionId, 'active:', activeMeta.sessionId)
         return
       }
 
@@ -157,8 +158,8 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
 
       // 只处理属于当前活跃会话的事件 — 防止多会话串线
       const activeMeta = useChatStore.getState().activeSessionMeta
-      if (data.sessionId && activeMeta?.sessionId && data.sessionId !== activeMeta.sessionId) {
-        console.log('[ChatArea] skipping done from other session:', data.sessionId, 'active:', activeMeta.sessionId)
+      if (data.sessionId && activeMeta?.sessionId && activeMeta?.sessionId !== data.sessionId) {
+        console.log('[ChatArea] SKIP done from other session:', data.sessionId, 'active:', activeMeta.sessionId)
         return
       }
 
