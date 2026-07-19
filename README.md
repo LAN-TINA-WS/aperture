@@ -6,6 +6,27 @@
 >
 > **⚠️ 开发阶段 — 当前为 Alpha 版本，API 和行为可能随时变更。暂不建议用于生产环境。**
 
+
+## 快速启动
+
+```bash
+# 1. 安装依赖
+cd D:/Deploy/Warehouse/Aperture
+npm install -g pnpm   # 如果没有 pnpm
+pnpm install
+
+# 2. 构建
+pnpm run build
+
+# 3. 启动（开发模式，含热更新）
+pnpm run dev
+
+# 4. 打包为安装程序
+pnpm build:win          # Windows → dist/Aperture-Setup-x64.exe
+```
+
+> npm 全局安装（即将上线）：`npm install -g aperture` → `aperture`
+
 ## 一句话
 **为所有 AI Agent CLI 提供统一、优雅的桌面体验。一个窗口，通向任何 Agent。**
 
