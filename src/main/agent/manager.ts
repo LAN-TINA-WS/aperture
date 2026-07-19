@@ -110,14 +110,15 @@ export function startAgent(
         if (evt.type === 'done') {
           window.webContents.send('stream:done', {
             pid,
+            sessionId: session.sessionId,
             exitCode: evt.exitCode ?? 0,
             usage: evt.usage,
             cost: evt.cost,
           })
         } else if (evt.type === 'error') {
-          window.webContents.send('stream:error', { pid, message: evt.message })
+          window.webContents.send('stream:error', { pid, sessionId: session.sessionId, message: evt.message })
         } else {
-          window.webContents.send('stream:event', { pid, event: evt })
+          window.webContents.send('stream:event', { pid, sessionId: session.sessionId, event: evt })
         }
       }
     }
@@ -137,20 +138,20 @@ export function startAgent(
       for (const evt of flushed) {
         console.log(`[agent ${pid} flush event] type=${evt.type}`)
         if (evt.type === 'done') {
-          window.webContents.send('stream:done', { pid, exitCode: evt.exitCode ?? 0, usage: evt.usage, cost: evt.cost })
+          window.webContents.send('stream:done', { pid, sessionId: session.sessionId, exitCode: evt.exitCode ?? 0, usage: evt.usage, cost: evt.cost })
         } else if (evt.type === 'error') {
-          window.webContents.send('stream:error', { pid, message: evt.message })
+          window.webContents.send('stream:error', { pid, sessionId: session.sessionId, message: evt.message })
         } else {
-          window.webContents.send('stream:event', { pid, event: evt })
+          window.webContents.send('stream:event', { pid, sessionId: session.sessionId, event: evt })
         }
       }
     }
-    window.webContents.send('stream:done', { pid, exitCode: code ?? 0 })
+    window.webContents.send('stream:done', { pid, sessionId: session.sessionId, exitCode: code ?? 0 })
     activeSessions.delete(pid)
   })
 
   child.on('error', (err) => {
-    window.webContents.send('stream:error', { pid, message: err.message })
+    window.webContents.send('stream:error', { pid, sessionId: session.sessionId, message: err.message })
     activeSessions.delete(pid)
   })
 

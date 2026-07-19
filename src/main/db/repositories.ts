@@ -3,6 +3,9 @@
 // ═══════════════════════════════════════════════
 
 import { randomUUID } from 'crypto'
+import { homedir } from 'os'
+import { join, dirname } from 'path'
+import { mkdirSync, writeFileSync } from 'fs'
 import { unlinkSync, existsSync } from 'fs'
 import type { SqlJsStatic, Database as SqlJsDb, BindParams } from 'sql.js'
 import { getDb, saveDb } from './connection'
@@ -58,6 +61,19 @@ export async function createSession(backendId: string, cwd: string, model?: stri
   const id = randomUUID()
   const now = new Date().toISOString()
   await dbRun('INSERT INTO sessions (id, backend_id, cwd, model, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', [id, backendId, cwd, model ?? null, now, now])
+
+  // Create empty .jsonl file so CC can discover this session
+  try {
+    const projectsDir = join(homedir(), '.claude', 'projects')
+    // Encode workdir path: C:\path\to\dir → C--path-to-dir
+    const dirName = cwd.replace(/^([A-Z]):/, '$1--').replace(/[\/:]/g, '-')
+    const sessionFile = join(projectsDir, dirName, `${id}.jsonl`)
+    mkdirSync(dirname(sessionFile), { recursive: true })
+    writeFileSync(sessionFile, '')
+  } catch (_) {
+    // Non-fatal: session will be created on first message anyway
+  }
+
   return (await getSession(id))!
 }
 
