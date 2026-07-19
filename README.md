@@ -36,16 +36,24 @@ pnpm build:win          # Windows → dist/Aperture-Setup-x64.exe
 
 | 功能 | 状态 | 说明 |
 |------|:---:|------|
-| **Claude Code 直连** | ✅ | CLI spawn 多轮对话，`--continue` 会话保持，流式 parsing |
-| **Provider 管理** | ✅ | 75+ 预设 Provider，本地 Agent 配置扫描，支持 HTTP/SOCKS 代理 |
-| **会话侧边栏** | ✅ | 按项目分组、新建/删除/重命名/右键菜单 |
+| **Claude Code 直连** | ✅ | CLI spawn 多轮对话，`--resume` 会话保持，流式 parsing |
+| **Provider 管理** | ✅ | 75+ 预设 Provider，本地 Agent 配置扫描，按 name+apiBase 去重 |
+| **会话侧边栏** | ✅ | 按项目分组、新建/删除/重命名/右键菜单，实时文件监听刷新 |
+| **会话删除级联清理** | ✅ | 删除时同步清理 CC 文件系统 `.jsonl` + 级联删除消息 |
 | **底部状态栏** | ✅ | 20px 全宽，轮次耗时 · 上下文用量 · 审批模式 · 版本号 |
 | **设置面板** | ✅ | Hermes 风格侧边栏导航，9 个独立 Section，字体大小自由调节 |
+| **网关面板** | ✅ | CLI 连接状态检测（Claude Code 等），独立弹窗 |
 | **消息折叠** | ✅ | 按轮次渐进释放，避免长对话卡顿 |
 | **停止/排队** | ✅ | 思考中终止进程 + 新消息自动排队 |
 | **智能滚动** | ✅ | 流式输出时可翻阅历史不被打断 |
-| **session-scanner** | ✅ | 直接读取 `~/.claude/projects/` 扫描 Claude Code 历史会话 |
+| **输入框自动调高** | ✅ | textarea 根据内容自动扩高，最大6行 |
+| **Composer 浮窗弹出** | ✅ | Hermes 风格：长按撕开、Pointer Events 拖动、释放吸附回 dock |
+| **多会话串线防护** | ✅ | stream 事件按 sessionId 过滤，防止并发会话输出混淆 |
+| **新建会话预创建** | ✅ | 新建即生成空 `.jsonl` 文件，Claude Code 直接可识别 |
+| **session-scanner** | ✅ | 直接读取 `~/.claude/projects/` 扫描 CC 历史会话 |
 | **CC Switch 导入** | ✅ | 读取 CC Switch SQLite 数据库迁移 Provider/设置 |
+| **npm 全局安装** | ✅ | `npm i -g aperture-desktop` → `aperture` 一键启动 |
+| **electron-builder 打包** | ✅ | `pnpm build:win` → `dist/Aperture-Setup-x64.exe` |
 
 > 参考项目: [CC Switch](https://github.com/farion1231/cc-switch) (MIT) · 设计灵感: [Hermes Desktop](https://github.com/NousResearch/hermes-agent)
 
@@ -72,7 +80,7 @@ pnpm build:win          # Windows → dist/Aperture-Setup-x64.exe
 | **权限审批 UI** | 接管 `Ask`/`Code`/`Plan`/`Bypass` 四种模式的可视化审批 |
 | **文件浏览器** | 右侧详情面板显示项目文件树 |
 | **内嵌终端** | xterm.js + node-pty, 一键打开 Agent 所在目录终端 |
-| **应用打包发布** | electron-builder → Windows/macOS/Linux 安装包 |
+| **应用打包发布** | ✅ 已实现 | electron-builder → Windows/macOS/Linux 安装包，npm 全局发布 |
 | **自动更新** | electron-updater, GitHub Releases 分发 |
 
 ---
