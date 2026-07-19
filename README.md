@@ -1,3 +1,5 @@
+<p align="center"><img src="Aperture_icon_A_终端光圈.png" width="128" alt="Aperture Logo" /></p>
+
 # Aperture — 通用 AI Agent 桌面壳
 
 > Aperture /ˈæpətʃər/ — 光圈，开口。
