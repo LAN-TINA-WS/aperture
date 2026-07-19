@@ -10,22 +10,17 @@
 ## 快速启动
 
 ```bash
-# 1. 安装依赖
+# 方式一：npm 全局安装（推荐）
+npm i -g aperture-desktop
+aperture
+
+# 方式二：开发模式（从源码启动）
 cd D:/Deploy/Warehouse/Aperture
-npm install -g pnpm   # 如果没有 pnpm
-pnpm install
+pnpm install && pnpm run build && pnpm run dev
 
-# 2. 构建
-pnpm run build
-
-# 3. 启动（开发模式，含热更新）
-pnpm run dev
-
-# 4. 打包为安装程序
+# 方式三：打包为安装程序
 pnpm build:win          # Windows → dist/Aperture-Setup-x64.exe
 ```
-
-> npm 全局安装（即将上线）：`npm install -g aperture` → `aperture`
 
 ## 一句话
 **为所有 AI Agent CLI 提供统一、优雅的桌面体验。一个窗口，通向任何 Agent。**
@@ -95,7 +90,7 @@ pnpm build:win          # Windows → dist/Aperture-Setup-x64.exe
 | 状态管理 | **Zustand 5** | 轻量无模板，与参考项目一致 |
 | 构建 | **Vite 7 + electron-vite** | HMR 热重载，electron-vite 社区成熟方案 |
 | IPC | **contextBridge + ipcRenderer/ipcMain** | Electron 安全标准；Renderer 不直接访问 Node.js |
-| 数据库 | **better-sqlite3** | 同步 API，零延迟；会话/Provider/设置全存 SQLite |
+| 数据库 | **sql.js** | 纯 WASM SQLite，无需原生编译，跨平台零配置 |
 | 编辑器 | **CodeMirror 6** | 文件编辑 + diff 高亮 + 语法着色 |
 | 终端(可选) | **xterm.js + node-pty** | 内嵌 CLI 终端面板 |
 | 包管理 | **pnpm** | monorepo 友好，三个参考项目均用 pnpm |
