@@ -589,7 +589,7 @@ diff.added.bg     #DCFCE7                      #064E3B
 diff.removed.bg   #FEE2E2                      #7F1D1D
 ```
 
-CSS 变量前缀：`--ap-*`（aperture）
+CSS 变量前缀：`--ap-*`（Aperture）
 
 ```css
 :root {
