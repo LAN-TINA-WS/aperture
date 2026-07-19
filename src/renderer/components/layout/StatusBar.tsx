@@ -235,7 +235,7 @@ export default function StatusBar({ onOpenGateway }: StatusBarProps) {
         </select>
 
         {/* 版本 */}
-        <span className="opacity-50">v0.1.1</span>
+        <span className="opacity-50">v0.1.2</span>
         <span className="opacity-40 text-[9px]">{useSettingsStore((s) => s.general.fontSize) ?? "14px"}</span>
       </div>
     </footer>
