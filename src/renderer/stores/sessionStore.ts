@@ -37,7 +37,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   create: async (backendId, cwd, model) => {
     const session = await window.api.session.create({
       backendId,
-      cwd: cwd ?? '~',
+      cwd: cwd ?? 'D:\\Deploy\\Claude Code',
       model
     })
     const s = session as unknown as Session

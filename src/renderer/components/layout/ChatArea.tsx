@@ -217,7 +217,8 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
     let activeId = useSessionStore.getState().activeId
     let isNewSession = false
     if (!activeId) {
-      const session = await useSessionStore.getState().create('claude')
+      const agentCwd = useSettingsStore.getState().agentCwd || await window.api.app.getHome()
+      const session = await useSessionStore.getState().create('claude', agentCwd)
       activeId = session.id
       isNewSession = true
       useChatStore.getState().resetMessageLimit()
@@ -237,8 +238,6 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
     // 获取活跃Provider
     const providerList = useSettingsStore.getState().providers
     const activeProvider = providerList.find(p => p.backendId === 'claude' && p.enabled)
-    const agentCwd = useSettingsStore.getState().agentCwd || await window.api.app.getHome()
-
     try {
       const sessionId = useChatStore.getState().activeSessionMeta?.sessionId
 
