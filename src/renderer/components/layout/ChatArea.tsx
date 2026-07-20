@@ -216,8 +216,8 @@ export default function ChatArea({ onOpenSettings, onOpenGateway, sidebarOpen, o
 
     let activeId = useSessionStore.getState().activeId
     let isNewSession = false
+    const agentCwd = useSettingsStore.getState().agentCwd || await window.api.app.getHome()
     if (!activeId) {
-      const agentCwd = useSettingsStore.getState().agentCwd || await window.api.app.getHome()
       const session = await useSessionStore.getState().create('claude', agentCwd)
       activeId = session.id
       isNewSession = true
