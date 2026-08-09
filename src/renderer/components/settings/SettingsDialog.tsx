@@ -151,10 +151,7 @@ function SectionHeading({
   title: string
 }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-(--ap-muted-foreground)">
-      <span className="size-3.5 shrink-0 flex items-center justify-center">
-        <IconComp />
-      </span>
+    <div className="flex items-center gap-2 px-3 pt-4 pb-1.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--ap-muted-foreground)' }}>
       <span>{title}</span>
     </div>
   )
@@ -206,21 +203,43 @@ export default function SettingsDialog({ open, onClose }: Props) {
       }}
     >
       <div
-        className="w-[880px] h-[620px] rounded-none overflow-hidden flex shadow-lg"
+        className="w-[880px] h-[620px] rounded overflow-hidden flex flex-col shadow-2xl animate-settings-pop"
         style={{
           backgroundColor: 'var(--ap-card)',
           border: '2px solid var(--ap-border)',
         }}
       >
+        {/* ═══ 顶部标题栏 ═══ */}
+        <div
+          className="flex items-center justify-between px-6 py-3 shrink-0"
+          style={{ borderBottom: '1px solid var(--ap-border)', backgroundColor: 'var(--ap-muted)' }}
+        >
+          <div className="flex items-center gap-2.5">
+            <Icon.Settings />
+            <span className="text-sm font-semibold" style={{ color: 'var(--ap-foreground)' }}>设置</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded hover:opacity-70 transition-opacity"
+            style={{ color: 'var(--ap-muted-foreground)' }}
+            title="关闭 (Esc)"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex flex-1 min-h-0">
         {/* ═══ 左侧导航 (Hermes NavLink 风格) — 宽 200px ═══ */}
         <nav
-          className="w-[200px] shrink-0 flex flex-col border-r py-5 px-3 gap-1"
+          className="w-[200px] shrink-0 flex flex-col border-r py-4 px-3 gap-1 overflow-y-auto"
           style={{
             borderColor: 'var(--ap-border)',
             backgroundColor: 'var(--ap-muted)',
           }}
         >
-          <SectionHeading icon={Icon.Settings} title="配置" />
+          <SectionHeading title="配置" />
           <NavLink icon={Icon.Server} label="Provider 管理" active={section === 'providers'} onClick={() => setSection('providers')} />
           <NavLink icon={Icon.Zap} label="MCP 服务器" active={section === 'mcp'} onClick={() => setSection('mcp')} />
           <NavLink icon={Icon.Terminal} label="Agent 设置" active={section === 'agent'} onClick={() => setSection('agent')} />
@@ -248,7 +267,7 @@ export default function SettingsDialog({ open, onClose }: Props) {
         </nav>
 
         {/* ═══ 右侧内容区 — CC Switch 风格 ═══ */}
-        <main className="flex-1 min-w-0 overflow-y-auto px-10 py-8 text-[14px]">
+        <main className="flex-1 min-w-0 overflow-y-auto px-8 py-6 text-[14px]">
           {section === 'providers' && <ProviderSection />}
           {section === 'mcp' && <McpSection />}
           {section === 'proxy' && <ProxySection />}
@@ -259,6 +278,7 @@ export default function SettingsDialog({ open, onClose }: Props) {
           {section === 'about' && <AboutSection />}
           {section === 'agent' && <AgentSection />}
         </main>
+        </div>
       </div>
     </div>
   )
