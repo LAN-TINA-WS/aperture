@@ -668,7 +668,7 @@ function AgentConfigScanner() {
         let added = 0
         for (const p of providers) {
           const exists = existing.some(
-            (ep) => ep.name === (p as any).name && ep.apiBase === (p as any).apiBase
+            (ep) => ep.name === (p as any).name && ep.endpoint === (p as any).apiBase
           )
           if (!exists) {
             addProvider(p as Omit<ProviderConfig, 'id' | 'createdAt'>)

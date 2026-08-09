@@ -143,13 +143,7 @@ function NavLink({
    SectionHeading — 分区标题 (图标+文字)
    ═══════════════════════════════════════════════ */
 
-function SectionHeading({
-  icon: IconComp,
-  title,
-}: {
-  icon: React.FC
-  title: string
-}) {
+function SectionHeading({ title }: { title: string }) {
   return (
     <div className="flex items-center gap-2 px-3 pt-4 pb-1.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--ap-muted-foreground)' }}>
       <span>{title}</span>
